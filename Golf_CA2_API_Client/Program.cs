@@ -81,7 +81,7 @@ namespace Golf_CA2_API_Client
                 if (response.IsSuccessStatusCode)
                 {
                     var returnedGolfers = await response.Content.ReadAsAsync<IEnumerable<Golfer>>(); // add from Console line
-                    Console.WriteLine("*** Complete Golfer List ***");
+                    Console.WriteLine("\n*** Complete Golfer List ***");
                     foreach (Golfer g in returnedGolfers)
                     {
                         Console.WriteLine(g);
@@ -107,7 +107,7 @@ namespace Golf_CA2_API_Client
 
 
                 // PUT: api/GolfClub/UpdateGolfer
-                Golfer g2 = new Golfer() { GUI = 5555, FirstName = "Rick", Surname = "Ross", Handicap = 3, };
+                Golfer g2 = new Golfer() { GUI = 5555, FirstName = "Rick", Surname = "Ross", Handicap = 3, ClubID = 3};
                 response = client.PutAsJsonAsync("UpdateGolfer", g2).Result;
                 if (response.IsSuccessStatusCode)
                 {
@@ -127,10 +127,68 @@ namespace Golf_CA2_API_Client
             }
         }
 
+        static async Task GetsCompsAsync()
+        {
+            using (HttpClient client = new HttpClient())
+            {
+                client.BaseAddress = new Uri("http://localhost:62457/api/Comps/");
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("applications/json"));
+
+                //GET api/ Comps / 
+                HttpResponseMessage response = await client.GetAsync("all");
+                if (response.IsSuccessStatusCode)
+                {
+                    var returnedComps = await response.Content.ReadAsAsync<IEnumerable<Competition>>();
+                    Console.WriteLine("\n*** Complete Comp List ****");
+                    int i = 0;
+                    foreach (Competition g in returnedComps)
+                    {
+                        i += 1;
+                        Console.WriteLine(i + ". " + g);
+                    }
+                }
+
+                //GET api/ Comps /{ id}
+                response = await client.GetAsync("1");
+                if (response.IsSuccessStatusCode)
+                {
+                    var returnedComp = await response.Content.ReadAsAsync<Competition>(); // add from Console line
+                    Console.WriteLine("\nGolf Comp with ID 1: " + returnedComp);
+                }
+
+                //POST api/ Comps / AddComp
+                Competition c1 = new Competition() { ID = 4, Name = "April Medaaaal", Date = new DateTime(2020,04,01), Club = new GolfClub() { ID = 1 } };
+                response = client.PostAsJsonAsync("AddComp", c1).Result;
+                if (response.IsSuccessStatusCode)
+                {
+                    Console.WriteLine("\nAdded Golf Comp: " + c1.Name);
+                }
+
+                //PUT api/ Comps / UpdateComp
+                Competition c2 = new Competition() { ID = 4, Name = "April Medal", Date = new DateTime(2020, 04, 01), Club = new GolfClub() { ID = 1 } };
+                response = client.PutAsJsonAsync("UpdateComp", c2).Result;
+                if (response.IsSuccessStatusCode)
+                {
+                    Console.WriteLine("\nUpdated Golf Comp: " + c2.Name);
+                }
+
+                //DELETE api/ Comps / DeleteComp/{ID}
+                response = await client.GetAsync("4");
+                var returnGolfComp = await response.Content.ReadAsAsync<Competition>();
+
+                response = client.DeleteAsync("DeleteComp/4").Result;
+                if (response.IsSuccessStatusCode)
+                {
+                    Console.WriteLine("\nDeleted Golf Comp: " + returnGolfComp.Name);
+                }
+            }
+        }
+
         static void Main()
         {
             GetsClubsAsync().Wait();
             GetsGolfersAsync().Wait();
+            GetsCompsAsync().Wait();
             Console.ReadLine();
         }
     }

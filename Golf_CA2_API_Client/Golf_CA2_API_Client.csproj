@@ -50,6 +50,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Models\Competition.cs" />
     <Compile Include="Models\GolfClub.cs" />
     <Compile Include="Models\Golfer.cs" />
     <Compile Include="Program.cs" />
