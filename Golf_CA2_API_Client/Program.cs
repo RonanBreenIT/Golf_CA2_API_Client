@@ -157,7 +157,7 @@ namespace Golf_CA2_API_Client
                 }
 
                 //POST api/ Comps / AddComp
-                Competition c1 = new Competition() { ID = 4, Name = "April Medaaaal", Date = new DateTime(2020,04,01), Club = new GolfClub() { ID = 1 } };
+                Competition c1 = new Competition() { ID = 4, Name = "April Medaaaal", Date = new DateTime(2020,04,01) };
                 response = client.PostAsJsonAsync("AddComp", c1).Result;
                 if (response.IsSuccessStatusCode)
                 {
@@ -165,7 +165,7 @@ namespace Golf_CA2_API_Client
                 }
 
                 //PUT api/ Comps / UpdateComp
-                Competition c2 = new Competition() { ID = 4, Name = "April Medal", Date = new DateTime(2020, 04, 01), Club = new GolfClub() { ID = 1 } };
+                Competition c2 = new Competition() { ID = 4, Name = "April Medal", Date = new DateTime(2020, 04, 01) };
                 response = client.PutAsJsonAsync("UpdateComp", c2).Result;
                 if (response.IsSuccessStatusCode)
                 {
@@ -184,11 +184,77 @@ namespace Golf_CA2_API_Client
             }
         }
 
+        static async Task GetsCourseAsync()
+        {
+            using (HttpClient client = new HttpClient())
+            {
+                client.BaseAddress = new Uri("http://localhost:62457/api/Course/");
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("applications/json"));
+
+                //GET api/ Course / 
+                HttpResponseMessage response = await client.GetAsync("all");
+                if (response.IsSuccessStatusCode)
+                {
+                    var returnedCourses = await response.Content.ReadAsAsync<IEnumerable<Course>>();
+                    Console.WriteLine("\n*** Complete Course List ****");
+                    int i = 0;
+                    foreach (Course g in returnedCourses)
+                    {
+                        i += 1;
+                        Console.WriteLine("Name: " + g.Name + ", ID: " + g.ID + ", Holes: " + g.Holes);
+                    }
+                }
+
+                //GET api/ Course /{ id}
+                response = await client.GetAsync("1");
+                if (response.IsSuccessStatusCode)
+                {
+                    var returnedCourse = await response.Content.ReadAsAsync<Course>(); // add from Console line
+                    Console.WriteLine("\nName: " + returnedCourse.Name + ", ID: " + returnedCourse.ID + ", Holes: " + returnedCourse.Holes);
+                }
+
+                // GET api / Course /{ id}/{holenumber}
+                response = await client.GetAsync("1/5");
+                if (response.IsSuccessStatusCode)
+                {
+                    var returnedHole = await response.Content.ReadAsAsync<Course>(); // add from Console line
+                    Console.WriteLine("\nHole 5 Details: " + "\nHole Number: " + returnedHole.HoleNumber + "\nYardage: " + returnedHole.Distance + "\nIndex: " + returnedHole.Index);
+                }
+
+                //POST api/ Course / AddCourse
+                Course c1 = new Course() { HoleNumber = 1, ClubID = 1, Distance = 486, Index = 14, Par = 5, Name = "Bluett Course", ID = 2, Holes = 18 };
+                response = client.PostAsJsonAsync("AddCourse", c1).Result;
+                if (response.IsSuccessStatusCode)
+                {
+                    Console.WriteLine("\nAdded Golf Course: " + c1.Name);
+                }
+
+                //PUT api/ Course / UpdateCourse
+                Course c2 = new Course() { HoleNumber = 1, ClubID = 1, Distance = 486, Index = 14, Par = 5, Name = "Blue Course", ID = 2, Holes = 18 };
+                response = client.PutAsJsonAsync("UpdateCourse", c2).Result;
+                if (response.IsSuccessStatusCode)
+                {
+                    Console.WriteLine("\nUpdated Golf Course: " + c2.Name);
+                }
+
+                //DELETE api/ Course / DeleteCourse/{ID}
+                response = await client.GetAsync("2");
+                var returnCourse = await response.Content.ReadAsAsync<Course>();
+
+                response = client.DeleteAsync("DeleteCourse/2").Result;
+                if (response.IsSuccessStatusCode)
+                {
+                    Console.WriteLine("\nDeleted Golf Course: " + returnCourse.Name);
+                }
+            }
+        }
+
         static void Main()
         {
             GetsClubsAsync().Wait();
             GetsGolfersAsync().Wait();
             GetsCompsAsync().Wait();
+            GetsCourseAsync().Wait();
             Console.ReadLine();
         }
     }

@@ -12,9 +12,9 @@ namespace Golf_CA2_API_Client.Models
 
         public string Name { get; set; }
 
-        public virtual ICollection<Golfer> GolferGUI { get; set; }
+        public virtual ICollection<Golfer> Golfers { get; set; } // Many Golfers in each Comp
 
-        public string CompName { get; set; }
+        public virtual ICollection<Competition> Comps { get; set; }
 
         public override string ToString()
         {
