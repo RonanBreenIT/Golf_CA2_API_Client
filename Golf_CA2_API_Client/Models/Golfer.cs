@@ -24,6 +24,8 @@ namespace Golf_CA2_API_Client.Models
 
         public int? StableScore { get; set; }
 
+        public virtual ICollection<Competition> Comps { get; set; } // Golfers can play many Comps
+
         public override string ToString()
         {
             return "\nGolfer Name: " + FirstName + " " + Surname + "\nGUI: " + GUI + "\nHandicap: " + Handicap + "\nClub: " + ClubID;
